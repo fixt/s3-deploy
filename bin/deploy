@@ -1,3 +1,3 @@
 #!/bin/sh
 
-export $(cat .env | xargs) && node ./node_modules/fixt-s3/bin/s3-push
+export $(cat .env | xargs) && node ./node_modules/s3-deploy/bin/s3-push
