@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var s3 = require('s3');
+var s3 = require('@auth0/s3');
 
 var AWS_BUCKET = process.env.AWS_BUCKET;
 var AWS_REGION = process.env.AWS_REGION;
@@ -8,45 +8,45 @@ var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
 var LOCAL_BUILD_FOLDER = process.env.LOCAL_BUILD_FOLDER;
 
-var s3_sync = function () {
-  var client = s3.createClient({
-    s3Options: {
-      accessKeyId: AWS_ACCESS_KEY,
-      secretAccessKey: AWS_SECRET_KEY,
-      region: AWS_REGION
-    },
-  });
+var s3_sync = function() {
+    var client = s3.createClient({
+        s3Options: {
+            accessKeyId: AWS_ACCESS_KEY,
+            secretAccessKey: AWS_SECRET_KEY,
+            region: AWS_REGION
+        },
+    });
 
-  var params = {
-    localDir: LOCAL_BUILD_FOLDER,
+    var params = {
+        localDir: LOCAL_BUILD_FOLDER,
 
-    s3Params: {
-      Bucket: AWS_BUCKET,
-      Prefix: "",
-      ACL: "public-read"
+        s3Params: {
+            Bucket: AWS_BUCKET,
+            Prefix: "",
+            ACL: "public-read"
+        }
     }
-  }
 
-  var uploader = client.uploadDir(params);
+    var uploader = client.uploadDir(params);
 
-  uploader.on('error', function(err) {
-    console.error("unable to sync:", err.stack);
-    process.exit(1);
-  });
+    uploader.on('error', function(err) {
+        console.error("unable to sync:", err.stack);
+        process.exit(1);
+    });
 
-  uploader.on('progress', function() {
-    console.log("progress", uploader.progressAmount, uploader.progressTotal);
-  });
+    uploader.on('progress', function() {
+        console.log("progress", uploader.progressAmount, uploader.progressTotal);
+    });
 
-  uploader.on('end', function() {
-    console.log("done uploading");
-  });
+    uploader.on('end', function() {
+        console.log("done uploading");
+    });
 }
 
 
 if (AWS_BUCKET && AWS_REGION && AWS_ACCESS_KEY && AWS_SECRET_KEY && LOCAL_BUILD_FOLDER) {
-  s3_sync();
+    s3_sync();
 } else {
-  console.error("ERROR: You are missing an environment variables. Required keys are: " +
-                "AWS_BUCKET, AWS_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY, and LOCAL_BUILD_FOLDER");
+    console.error("ERROR: You are missing an environment variables. Required keys are: " +
+        "AWS_BUCKET, AWS_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY, and LOCAL_BUILD_FOLDER");
 }
